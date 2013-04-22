@@ -2,7 +2,7 @@ backupCopy
 ==========
 
 A script utilizing the CopyCmd tool (Copy.com) and Dialog written in Bash for backing up directories on your system. 
-----------
+
 
 Copy.com is a pretty nice Dropbox like service. It let's you save your files in the cloud. It also has a pretty awesome deal going right now when you refer someone to the 
 service. It doesn't just give 5gb extra of storage to you but also to the one you refered. So if you like this script and haven't signed up yet then please use this 
