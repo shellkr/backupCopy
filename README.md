@@ -10,8 +10,8 @@ this referral link (https://copy.com?r=oN9cBn) to give us both some extra storag
 i utilize in this script. 
 
 backupCopy is basically just a Bash script using Dialog (http://goo.gl/ZXRXM) to make the process a bit more pretty. It will first ask you which local directory you want to backup 
-and then where to put it on Copy.com. It then compress the directory to a tar.xz file to make it smaller (about 50%), sends it to Copy and lastly ask if you want to keep the localy 
-compressed file or delete it.
+and then where to put it on Copy.com. It then compress the directory to a tar.xz to make it smaller (about 50%), encrypts the file with GPG, sends it to Copy and lastly ask if you 
+want to keep the file localy or delete it.
 
 **To use it. Open the terminal and...**
 
