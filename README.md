@@ -9,9 +9,9 @@ someone new to the service. It doesn't just give 5GB extra of storage to you but
 this referral link (https://copy.com?r=oN9cBn) to give us both some extra storage. One of the tools that Copy.com offer you is their CopyCmd command line client. This is the tool 
 i utilize in this script. 
 
-backupCopy is basically just a Bash script using Dialog (http://goo.gl/ZXRXM) to make it a bit more pretty. It will first ask you which directory you want to backup and then where 
-to put it on Copy.com. It then compress the directory to a tar.xz file to make it smaller (about 50%), sends it to Copy and lastly ask if you want to keep the localy compressed 
-file or delete it.
+backupCopy is basically just a Bash script using Dialog (http://goo.gl/ZXRXM) to make the process a bit more pretty. It will first ask you which local directory you want to backup 
+and then where to put it on Copy.com. It then compress the directory to a tar.xz file to make it smaller (about 50%), sends it to Copy and lastly ask if you want to keep the localy 
+compressed file or delete it.
 
 **To use it. Open the terminal and...**
 
