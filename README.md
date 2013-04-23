@@ -23,7 +23,11 @@ compressed file or delete it.
 
 ``` chmod +x backupCopy ```
 
-3.) Run it. 
+3.) Edit the script and add your user/password.
+
+``` nano backupCopy ```
+
+4.) Run it. 
 
 ``` ./backupCopy ```
 
