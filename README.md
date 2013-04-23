@@ -1,7 +1,7 @@
 backupCopy
 ==========
 
-A script utilizing the CopyCmd tool (Copy.com) and Dialog written in Bash for backing up directories on your system. 
+### A script utilizing the CopyCmd tool (Copy.com) and Dialog written in Bash for backing up directories on your system. ###
 
 
 Copy.com is basically just another Dropbox like service letting you save your files to the cloud. Besides Linux support it got a pretty awesome deal going right now when you refer
@@ -12,3 +12,14 @@ i utilize in this script.
 backupCopy is basically just a Bash script using Dialog (http://goo.gl/ZXRXM) to make it a bit more pretty. It will first ask you which directory you want to backup and then where 
 to put it on Copy.com. It then compress the directory to a tar.xz file to make it smaller (about 50%), sends it to Copy and lastly ask if you want to keep the localy compressed 
 file or delete it.
+
+To use it by opening the terminal and:
+
+1.) Download. 
+```wget https://github.com/Almehdi/backupCopy/blob/master/backupCopy```
+
+2.) Make it exacutable. 
+```chmod +x backupCopy```
+
+3.) Run it. 
+```./backupCopy```
