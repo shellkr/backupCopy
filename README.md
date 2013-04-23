@@ -25,4 +25,6 @@ file or delete it.
 
 3.) Run it. 
 
-```./backupCopy```
+``` ./backupCopy ```
+
+Any questions? Just contact me on Google+ (http://goo.gl/MjpTZ)
