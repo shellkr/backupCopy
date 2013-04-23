@@ -13,15 +13,15 @@ backupCopy is basically just a Bash script using Dialog (http://goo.gl/ZXRXM) to
 to put it on Copy.com. It then compress the directory to a tar.xz file to make it smaller (about 50%), sends it to Copy and lastly ask if you want to keep the localy compressed 
 file or delete it.
 
-*** To use it. Open the terminal and... ***
+**To use it. Open the terminal and...**
 
 1.) Download. 
 
-```wget https://github.com/Almehdi/backupCopy/blob/master/backupCopy```
+``` wget https://github.com/Almehdi/backupCopy/blob/master/backupCopy ```
 
 2.) Make it exacutable. 
 
-```chmod +x backupCopy```
+``` chmod +x backupCopy ```
 
 3.) Run it. 
 
