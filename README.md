@@ -23,7 +23,7 @@ compressed file or delete it.
 
 ``` chmod +x backupCopy ```
 
-3.) Edit the script and add your user/password.
+3.) Edit the script and add your Copy username and password. (A tip: use Pass http://goo.gl/JyNzX)
 
 ``` nano backupCopy ```
 
