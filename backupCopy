@@ -19,8 +19,10 @@
 cp_pass=""
 cp_user=""
 
+## Adding the password in plane text is discurraged. Preferrable use a password handler like Pass.
+## How to use Pass is explained here http://goo.gl/XLbFK.
 
-############################ Don't touch the below code ############################
+########################### Don't touch the below code ##############################
 
 if [ "$cp_pass" = "" -o "$cp_user" = "" ]; then
 	echo "The username or password has not been set. Edit script and enter your credentials."
