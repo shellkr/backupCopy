@@ -26,7 +26,7 @@ cp_user=""
 
 ## Make some checks the script needs to run.
 if [ "$(which {gpg,dialog} &> /dev/null;echo $?)" = "1" ]; then
-	echo "missing a dependency to run the script. Make sure to have 'gpg' and 'dialog' installed."
+	echo "Missing a dependency to run the script. Make sure to have 'gpg' and 'dialog' installed."
 	exit 1
 elif [ "$cp_pass" = "" -o "$cp_user" = "" ]; then
 	echo "The username or password has not been set. Edit script and enter your credentials."
@@ -37,8 +37,8 @@ CopyCmd="CopyCmd Cloud -password=$cp_pass -username=$cp_user"
 
 ## Select the local dir to backup and then destination dir on Copy.
 dialog --title "Info" --msgbox "To select which directory to backup use the arrow keys\nwhen navigating. Then hit space key to select and return\nkey to confirm.\n\nYou can also enter the path to the directory directly." 10 60
-locl_dir=$(dialog --stdout --title "Local directory to backup" --dselect $HOME 20 60)
-dest_dir=$(dialog --stdout --title "Destination on Copy" --inputbox "\nEnter the destination directory on Copy.com for which you want\nto backup to.\n\n" 12 70)
+locl_dir=$(dialog --stdout --title "Local directory to backup" --dselect $HOME 20 60); [ "$(echo $?)" = "1" ] && exit 1
+dest_dir=$(dialog --stdout --title "Destination on Copy" --inputbox "\nEnter the destination directory on Copy.com for which you want\nto backup to.\n\n" 12 70); [ "$(echo $?)" = "1" ] && exit 1
 clear
 
 ## Abort if dest_dir is empty.
@@ -57,21 +57,42 @@ if ! echo $locl_dir | grep -G "/$"; then
 	locl_dir="$locl_dir/"
 fi
 
-bckup_file="$(basename $locl_dir)-$(date +%Y%m%d).[gpg-encrypted].tar.xz"
+## Let's make a informative filename and a less cluttered code. 
+bckup_file="$(basename $locl_dir)-$(date +%Y%m%d)_gpg-encrypted.tar.xz"
+keep_file="$(basename $locl_dir)-$(date +%Y%m%d-%H%M%S)_gpg-encrypted.tar.xz"
+
+## Check if a file with the same name already exist. If it does ask what to do.
+if [ -e "$bckup_file" ]; then
+	dialog --title "Overwrite file?" --yesno "The file '$bckup_file' already exist. What is your wish? A 'yes' will overwrite it and a 'no' will renamed it to '$keep_file'." 10 75
+	if [ "$?" = "0" ]; then
+        	if [ "test -O $bckup_file" = "0" ]; then
+                	rm $(pwd)/$bckup_file
+        	else
+                	sudo su -c "rm $(pwd)/$bckup_file"
+        	fi
+	else
+		if [ "test -O $bckup_file" = "0" ]; then
+			mv $bckup_file $keep_file
+		else
+			sudo mv $bckup_file $keep_file
+		fi
+	fi
+fi
+
 
 ## Use sudo depending on which user the directory belongs too.
 if [ "test -O $locl_dir" = "0" ]; then
 	## Compress the chosen directory.
-	dialog --infobox "Making a tar.xz archive of the chosen directory '$locl_dir'\n(it might take a while)..." 8 80 ; sleep 5
+	dialog --infobox "Making a tar.xz archive of the chosen directory '$locl_dir'\n\n(it might take a while)..." 8 80 ; sleep 5
 	XZ_OPT=-9 tar cJf $bckup_file $locl_dir &> /dev/null
 else
 	## Compress the chosen directory as root.
-	dialog --infobox "Making a tar.xz archive of the chosen directory '$locl_dir'\n(it might take a while)..." 8 80 ; sleep 5
+	dialog --infobox "Making a tar.xz archive of the chosen directory '$locl_dir'\n\n(it might take a while)..." 8 80 ; sleep 5
 	sudo su -c "XZ_OPT=-9 tar cJf $bckup_file $locl_dir &> /dev/null"
 fi
 
 ## Encrypt the file.
-dialog --infobox "Encrypting the file as it will be sent to Copy.com through simple http which is not safe... Enter a password and make sure to remember it." 6 75 ; sleep 10
+dialog --title "Encrypt file with GPG" --msgbox "Will now encrypt the file as it will be sent to Copy.com through simple http which should not be regarded as safe... Enter a password and make sure to remember it." 10 75
 gpg -c $bckup_file
 rm -f $bckup_file
 mv $bckup_file.gpg $bckup_file
@@ -89,7 +110,7 @@ if [ "$?" = "0" ]; then
 fi
 
 ## Whether to delete the local file or not.
-dialog --title "Delete the file?" --yesno "Do you wish to delete the below file from the local computer?\nThe copy of the file sent to Copy.com will not be deleted.\n\n$(pwd)/$bckup_file" 10 75
+dialog --title "Delete the file?" --yesno "Do you wish to delete the below file from the local computer?\nThe file sent to Copy.com will not be deleted.\n\n$(pwd)/$bckup_file" 10 75
 
 if [ "$?" = "0" ]; then
 	if [ "test -O $bckup_file" = "0" ]; then
