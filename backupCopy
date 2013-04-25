@@ -79,14 +79,14 @@ if [ -e "$bckup_file" ]; then
 	fi
 fi
 
-        function progress(){
-        echo -n "Please wait..."
-        while true
-        do
-                echo -n "."
-                sleep 1
-        done
-        }
+function progress(){
+	echo -n "Please wait..."
+	while true
+	do
+		echo -n "."
+		sleep 1
+	done
+}
 
 ## Use sudo depending on which user the directory belongs too.
 if [ "test -O $locl_dir" = "0" ]; then
