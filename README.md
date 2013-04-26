@@ -17,7 +17,7 @@ want to keep the file localy or delete it.
 
 1.) Download. 
 
-``` wget https://github.com/Almehdi/backupCopy/blob/master/backupCopy ```
+``` wget https://raw.github.com/Almehdi/backupCopy/master/backupCopy ```
 
 2.) Make it exacutable. 
 
