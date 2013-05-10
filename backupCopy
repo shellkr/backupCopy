@@ -26,8 +26,15 @@ cp_user=""
 ########################### Don't touch the below code ##############################
 
 ## Make some checks the script needs to run.
-[ -x "$(command -v {gpg,dialog})" ] && { echo "Missing a dependency to run the script. Make sure to have 'gpg' and 'dialog' installed."; exit 1; }
-[ -z "$cp_pass$cp_user" ] && { echo "The username or password has not been set. Edit script and enter your credentials."; exit 1; }
+[ -x "$(command -v {gpg,dialog})" ] && {
+	echo "Missing a dependency to run the script. Make sure to have 'gpg' and 'dialog' installed."
+	exit 1
+}
+
+[ -z "$cp_pass$cp_user" ] && {
+	echo "The username or password has not been set. Edit script and enter your credentials." 
+	exit 1
+}
 
 ## Make this common command shorter.
 CopyCmd="CopyCmd Cloud -password=$cp_pass -username=$cp_user"
@@ -41,7 +48,7 @@ dest_dir=$(dialog --stdout --title "Destination on Copy" --inputbox "\nEnter the
 clear
 echo $dest_dir $?
 ## Abort if $dest_dir is empty.
-[ "$dest_dir" = "" ] && echo "Empty destination directory. Aborted!" exit 1
+[ "$dest_dir" = "" ] && { echo "Empty destination directory. Aborted!"; exit 1; }
 
 ## Check if directory variables are valid. If not, add '/' to make the variable a valid directory.
 ! grep "^/" <<<$dest_dir && dest_dir="/$dest_dir" # make sure it starts with /
