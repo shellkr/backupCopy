@@ -26,13 +26,8 @@ cp_user=""
 ########################### Don't touch the below code ##############################
 
 ## Make some checks the script needs to run.
-if [ "$(which {gpg,dialog} &> /dev/null;echo $?)" = "1" ]; then
-	echo "Missing a dependency to run the script. Make sure to have 'gpg' and 'dialog' installed."
-	exit 1
-elif [ "$cp_pass" = "" -o "$cp_user" = "" ]; then
-	echo "The username or password has not been set. Edit script and enter your credentials."
-	exit 1
-fi
+[ -x "$(command -v {gpg,dialog})" ] && { echo "Missing a dependency to run the script. Make sure to have 'gpg' and 'dialog' installed."; exit 1; }
+[ -z "$cp_pass$cp_user" ] && { echo "The username or password has not been set. Edit script and enter your credentials."; exit 1; }
 
 ## Make this common command shorter.
 CopyCmd="CopyCmd Cloud -password=$cp_pass -username=$cp_user"
