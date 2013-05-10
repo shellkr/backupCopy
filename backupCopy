@@ -16,8 +16,9 @@
 
 
 ## Edit your Copy.com user credentials here.
-cp_pass=""
-cp_user=""
+#cp_pass=""
+#cp_user=""
+
 
 ## Adding the password in plane text is discurraged. Preferrable use a password handler like Pass.
 ## How to use Pass is explained here http://goo.gl/XLbFK.
@@ -33,45 +34,42 @@ elif [ "$cp_pass" = "" -o "$cp_user" = "" ]; then
 	exit 1
 fi
 
+## Make this common command shorter.
 CopyCmd="CopyCmd Cloud -password=$cp_pass -username=$cp_user"
 
-## Select the local dir to backup and then destination dir on Copy.
-dialog --title "Info" --msgbox "To select which directory to backup use the arrow keys\nwhen navigating. Then hit space key to select and return\nkey to confirm.\n\nYou can also enter the path to the directory directly." 10 60
-locl_dir=$(dialog --stdout --title "Local directory to backup" --dselect $HOME 20 60); [ "$(echo $?)" = "1" ] && exit 1
-dest_dir=$(dialog --stdout --title "Destination on Copy" --inputbox "\nEnter the destination directory on Copy.com for which you want\nto backup to.\n\n" 12 70); [ "$(echo $?)" = "1" ] && exit 1
+## Select the local dir to backup and then destination dir on Copy and store it to a variable.
+dialog --title "Info" --msgbox "Use the arrow keys when navigating the directories. Hit space key to select a directory and return key to confirm your choice.\n\nYou can also enter the path directly to the directory." 10 60
+locl_dir=$(dialog --stdout --title "Local directory to backup" --dselect $HOME 20 60)
+	[[ $? = 1 ]] && exit 1 # The user have chosen to abort if output is 1.
+dest_dir=$(dialog --stdout --title "Destination on Copy" --inputbox "\nEnter the destination directory on Copy.com for which you want\nto backup to.\n\n" 12 70)
+	[[ $? = 1 ]] && exit 1 # The user have chosen to abort if output is 1.
 clear
+echo $dest_dir $?
+## Abort if $dest_dir is empty.
+[ "$dest_dir" = "" ] && echo "Empty destination directory. Aborted!" exit 1
 
-## Abort if dest_dir is empty.
-if [ "$dest_dir" = "" ]; then
-	echo "Empty destination. Aborted!"
-	exit 1
-fi
+## Check if directory variables are valid. If not, add '/' to make the variable a valid directory.
+! grep "^/" <<<$dest_dir && dest_dir="/$dest_dir" # make sure it starts with /
+! grep "/$" <<<$locl_dir && locl_dir="$locl_dir/" # make sure it ends with /
 
-## Make sure the destination dir format is a valid directory.
-if ! echo $dest_dir | grep -G "^/"; then
-	dest_dir="/$dest_dir"
-fi
-
-## Make sure the local dir format is a valid directory.
-if ! echo $locl_dir | grep -G "/$"; then
-	locl_dir="$locl_dir/"
-fi
-
-## Let's make a informative filename and a less cluttered code. 
+## Let's make a informative filename and a less cluttered code.
 bckup_file="$(basename $locl_dir)-$(date +%Y%m%d)_gpg-encrypted.tar.xz"
+
+## If $bckup_file already exist add a time stamp so multiple files can exist.
 keep_file="$(basename $locl_dir)-$(date +%Y%m%d-%H%M%S)_gpg-encrypted.tar.xz"
 
-## Check if a file with the same name already exist. If it does ask what to do.
-if [ -e "$bckup_file" ]; then
+## Check if a file with the same name already exist. If it does. Ask what to do.
+if [ -e $bckup_file ]; then
 	dialog --title "Overwrite file?" --yesno "The file '$bckup_file' already exist. A 'yes' will overwrite and a 'no' will renamed it to\n\n'$keep_file'." 10 75
-	if [ "$?" = "0" ]; then
-        	if [ "test -O $bckup_file" = "0" ]; then
-                	rm $(pwd)/$bckup_file
+
+	if [ "$?" = "0" ]; then # If yes
+        	if [ -O $bckup_file ]; then # If file belong to regular user or root
+                	rm $bckup_file
         	else
-                	sudo su -c "rm $(pwd)/$bckup_file"
+                	sudo su -c "rm $bckup_file"
         	fi
 	else
-		if [ "test -O $bckup_file" = "0" ]; then
+		if [ -O $bckup_file ]; then
 			mv $bckup_file $keep_file
 		else
 			sudo mv $bckup_file $keep_file
@@ -79,6 +77,7 @@ if [ -e "$bckup_file" ]; then
 	fi
 fi
 
+## Let's add a progress bar function
 function progress(){
 	echo -n "Please wait..."
 	while true
@@ -89,13 +88,13 @@ function progress(){
 }
 
 ## Use sudo depending on which user the directory belongs too.
-if [ "test -O $locl_dir" = "0" ]; then
+if [ -O $locl_dir ]; then
 	## Compress the chosen directory.
 	dialog --infobox "Making a tar.xz archive of the chosen directory '$locl_dir'\n\n(it might take a while)..." 8 80 ; sleep 5
 
-	progress &
+	progress & # start progress bar
 	MYSELF=$!
-	XZ_OPT=-9 tar cJf $bckup_file $locl_dir &>/dev/null
+	XZ_OPT=-9 tar cJf $bckup_file $locl_dir &>/dev/null # compress file
 	kill $MYSELF &>/dev/null
 	echo -n ".done."
 	echo
@@ -114,22 +113,22 @@ fi
 ## Encrypt the file.
 dialog --title "Encrypt file with GPG" --msgbox "The file shall now be encrypted as it will be sent to Copy.com through simple http which should not be regarded as safe... Enter a password and make sure to remember it." 10 75
 gpg -c $bckup_file
-rm -f $bckup_file
-mv $bckup_file.gpg $bckup_file
+rm -f $bckup_file # remove original file as a new encrypted one have been created
+mv $bckup_file.gpg $bckup_file # Rename the encrypted file to our preferred name
 
 ## Whether to send the file to Copy.com or not.
 dialog --title "Send files to Copy.com?" --yesno "Do you wish to send '$(pwd)/$bckup_file' ($(du -h $bckup_file|cut -f1)) to Copy.com?" 8 80
 
 if [ "$?" = "0" ]; then
 	## Check if destination dir exist. If not, create it.
-	if $CopyCmd ls $dest_dir|grep -G 'Error'; then
+	if $CopyCmd ls $dest_dir|grep 'Error'; then
 		$CopyCmd mkdir $dest_dir
 		dialog --infobox "The destination directory did not exist on Copy.com. Created it." 3 75 ; sleep 5
 	fi
 
         progress &
         MYSELF=$!
-	$CopyCmd put -r $bckup_file $dest_dir &> /dev/null
+	$CopyCmd put -r $bckup_file $dest_dir &> /dev/null # Send the file
         kill $MYSELF &>/dev/null
         echo -n ".done."
         echo
@@ -139,10 +138,10 @@ fi
 dialog --title "Delete the file?" --yesno "Do you wish to delete the below file from the local computer?\nThe file sent to Copy.com will not be deleted.\n\n$(pwd)/$bckup_file" 10 75
 
 if [ "$?" = "0" ]; then
-	if [ "test -O $bckup_file" = "0" ]; then
-		rm $(pwd)/$bckup_file
+	if [ -O $bckup_file ]; then
+		rm $bckup_file
 	else
-		sudo su -c "rm $(pwd)/$bckup_file"
+		sudo su -c "rm $bckup_file"
 	fi
 fi
 clear
