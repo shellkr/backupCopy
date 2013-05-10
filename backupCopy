@@ -97,9 +97,9 @@ if [ -O $locl_dir ]; then
 	dialog --infobox "Making a tar.xz archive of the chosen directory '$locl_dir'\n\n(it might take a while)..." 8 80 ; sleep 5
 
 	progress & # start progress bar
-	MYSELF=$!
+	myself=$!
 	XZ_OPT=-9 tar cJf $bckup_file $locl_dir &>/dev/null # compress file
-	kill $MYSELF &>/dev/null
+	kill $myself &>/dev/null
 	echo -n ".done."
 	echo
 else
@@ -107,9 +107,10 @@ else
         dialog --infobox "Making a tar.xz archive of the chosen directory '$locl_dir'\n\n(it might take a while)..." 8 80 ; sleep 5
 
 	progress &
-        MYSELF=$!
-	sudo su -c "XZ_OPT=-9 tar cJf $bckup_file $locl_dir &> /dev/null"
-        kill $MYSELF &>/dev/null
+        myself=$!
+	kill -s STOP $myself
+	sudo su -c "kill -s CONT $myself; XZ_OPT=-9 tar cJf $bckup_file $locl_dir &> /dev/null"
+        kill $myself &>/dev/null
         echo -n ".done."
         sleep 2
 fi
@@ -131,9 +132,9 @@ if [ "$?" = "0" ]; then
 	fi
 
         progress &
-        MYSELF=$!
+        myself=$!
 	$CopyCmd put -r $bckup_file $dest_dir &> /dev/null # Send the file
-        kill $MYSELF &>/dev/null
+        kill $myself &>/dev/null
         echo -n ".done."
         echo
 fi
