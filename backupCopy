@@ -16,8 +16,8 @@
 
 
 ## Edit your Copy.com user credentials here.
-#cp_pass=""
-#cp_user=""
+cp_pass=""
+cp_user=""
 
 
 ## Adding the password in plane text is discurraged. Preferrable use a password handler like Pass.
