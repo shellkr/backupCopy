@@ -41,12 +41,14 @@ CopyCmd="CopyCmd Cloud -password=$cp_pass -username=$cp_user"
 
 ## Select the local dir to backup and then destination dir on Copy and store it to a variable.
 dialog --title "Info" --msgbox "Use the arrow keys when navigating the directories. Hit space key to select a directory and return key to confirm your choice.\n\nYou can also enter the path directly to the directory." 10 60
-locl_dir=$(dialog --stdout --title "Local directory to backup" --dselect $HOME 20 60)
-	[[ $? = 1 ]] && exit 1 # The user have chosen to abort if output is 1.
-dest_dir=$(dialog --stdout --title "Destination on Copy" --inputbox "\nEnter the destination directory on Copy.com for which you want\nto backup to.\n\n" 12 70)
-	[[ $? = 1 ]] && exit 1 # The user have chosen to abort if output is 1.
+
+	locl_dir=$(dialog --stdout --title "Local directory to backup" --dselect $HOME 20 60)
+		[[ $? = 1 ]] && exit 1 # The user have chosen to abort if output is 1.
+
+	dest_dir=$(dialog --stdout --title "Destination on Copy" --inputbox "\nEnter the destination directory on Copy.com for which you want\nto backup to.\n\n" 12 70)
+		[[ $? = 1 ]] && exit 1 # The user have chosen to abort if output is 1.
 clear
-echo $dest_dir $?
+
 ## Abort if $dest_dir is empty.
 [ "$dest_dir" = "" ] && { echo "Empty destination directory. Aborted!"; exit 1; }
 
