@@ -65,12 +65,12 @@ if [ -e $bckup_file ]; then
             sudo su -c "rm $bckup_file"
         fi
     else
-		if [ -O $bckup_file ]; then
-			mv $bckup_file $keep_file
-		else
-			sudo mv $bckup_file $keep_file
-		fi
-	fi
+        if [ -O $bckup_file ]; then
+            mv $bckup_file $keep_file
+        else
+            sudo mv $bckup_file $keep_file
+        fi
+    fi
 fi
 
 ## Let's add a progress bar function
