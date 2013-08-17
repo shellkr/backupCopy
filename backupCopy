@@ -56,15 +56,15 @@ keep_file="$(basename $locl_dir)-$(date +%Y%m%d-%H%M%S)_gpg-encrypted.tar.xz"
 
 ## Check if a file with the same name already exist. If it does. Ask what to do.
 if [ -e $bckup_file ]; then
-	dialog --title "Overwrite file?" --yesno "The file '$bckup_file' already exist. A 'yes' will overwrite and a 'no' will renamed it to\n\n'$keep_file'." 10 75
+    dialog --title "Overwrite file?" --yesno "The file '$bckup_file' already exist. A 'yes' will overwrite and a 'no' will renamed it to\n\n'$keep_file'." 10 75
 
-	if [ "$?" = "0" ]; then # If yes
+    if [ "$?" = "0" ]; then # If yes
         if [ -O $bckup_file ]; then # If file belong to regular user or root
-           	rm $bckup_file
+            rm $bckup_file
         else
-           	sudo su -c "rm $bckup_file"
+            sudo su -c "rm $bckup_file"
         fi
-	else
+    else
 		if [ -O $bckup_file ]; then
 			mv $bckup_file $keep_file
 		else
